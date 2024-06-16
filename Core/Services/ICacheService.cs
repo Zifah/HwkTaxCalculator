@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Core.Services
+{
+    public interface ICacheService
+    {
+        void CacheItem<T>(string key, T value);
+        T RetrieveItem<T>(string key);
+    }
+}

@@ -1,3 +1,12 @@
+using Application;
+using Application.Deductibles;
+using Application.Services;
+using Application.TaxCalculators;
+using Core;
+using Core.Deductibles;
+using Core.Services;
+using Core.TaxCalculators;
+
 namespace API
 {
     public class Program
@@ -5,13 +14,23 @@ namespace API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var services = builder.Services;
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+
+            services.AddTransient<IConfigProvider, AppSettingsConfigProvider>();
+            services.AddTransient<IDeductibleFactory, DeductibleFactory>();
+            services.AddTransient<ITaxCalculatorService, TaxCalculatorService>();
+
+            // Tax calculator and Deductible calculator Services
+            services.AddTransient<ITaxCalculator, DefaultIncomeTaxCalculator>();
+            services.AddTransient<ITaxCalculator, DefaultSocialContributionCalculator>();
+            services.AddTransient<IDeductibleCalculator, DefaultCharityDeductibleCalculator>();
 
             var app = builder.Build();
 
