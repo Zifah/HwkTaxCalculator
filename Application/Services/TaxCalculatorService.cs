@@ -21,7 +21,8 @@ namespace Application.Services
 
         public Taxes CalculateTaxes(TaxPayer taxPayer)
         {
-            var taxes = _cacheService.RetrieveItem<Taxes>($"Taxes_{taxPayer.SSN}");
+            var cacheKey = $"Taxes_{taxPayer.SSN}";
+            var taxes = _cacheService.RetrieveItem<Taxes>(cacheKey);
             if (taxes != null)
             {
                 return taxes;
@@ -42,12 +43,15 @@ namespace Application.Services
                 taxDictionary[taxFieldName] = taxCalculator.Calculate(taxPayer);
             }
 
-            // TODO: Cache taxes before returning.
-            return new Taxes(taxDictionary)
+            taxes = new Taxes(taxDictionary)
             {
                 GrossIncome = taxPayer.GrossIncome,
                 CharitySpent = taxPayer.CharitySpent
             };
+
+            _cacheService.CacheItem(cacheKey, taxes);
+
+            return taxes;
         }
     }
 }
