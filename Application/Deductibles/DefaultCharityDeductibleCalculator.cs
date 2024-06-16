@@ -1,5 +1,4 @@
-﻿using Application.TaxCalculators;
-using Core;
+﻿using Core.Configuration;
 using Core.Deductibles;
 using Core.Dto;
 
@@ -9,17 +8,19 @@ namespace Application.Deductibles
     {
         public string[] ApplicableTaxes { get; }
         private readonly decimal _maxPercentage;
-        public string UniqueName => "Default: CharityDeductible";
+        public string UniqueName => "Default:CharityDeductible";
 
-        public DefaultCharityDeductibleCalculator(IConfigProvider configProvider)
+        public DefaultCharityDeductibleCalculator(IConfigurationFactory configurationFactory)
         {
-            ApplicableTaxes = configProvider.GetValue<string[]>("ApplicableTaxes");
+            var configProvider = configurationFactory.GetConfigProvider(UniqueName);
+
+            ApplicableTaxes = configProvider.GetValue<string[]>("ApplicableTaxes")!;
             _maxPercentage = configProvider.GetValue<decimal>("MaxPercentage");
         }
 
         public decimal Calculate(TaxPayer taxPayer)
         {
-            var maximumDeductibleAmount = decimal.Round(_maxPercentage * taxPayer.GrossIncome, 2);
+            var maximumDeductibleAmount = _maxPercentage * taxPayer.GrossIncome / 100;
             return Math.Min(taxPayer.CharitySpent, maximumDeductibleAmount);
         }
     }

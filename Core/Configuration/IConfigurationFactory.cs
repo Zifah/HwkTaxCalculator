@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core
+namespace Core.Configuration
 {
-    public interface IConfigProvider
+    public interface IConfigurationFactory
     {
-        public T GetValue<T>(string key);
+        IConfigProvider GetConfigProvider(string sectionName);
     }
 }

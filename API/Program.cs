@@ -1,8 +1,8 @@
-using Application;
+using Application.Configuration;
 using Application.Deductibles;
 using Application.Services;
 using Application.TaxCalculators;
-using Core;
+using Core.Configuration;
 using Core.Deductibles;
 using Core.Services;
 using Core.TaxCalculators;
@@ -23,7 +23,7 @@ namespace API
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            services.AddTransient<IConfigProvider, AppSettingsConfigProvider>();
+            services.AddTransient<IConfigurationFactory, AppSettingsConfigurationFactory>();
             services.AddTransient<IDeductibleFactory, DeductibleFactory>();
             services.AddTransient<ITaxCalculatorService, TaxCalculatorService>();
 
@@ -31,6 +31,9 @@ namespace API
             services.AddTransient<ITaxCalculator, DefaultIncomeTaxCalculator>();
             services.AddTransient<ITaxCalculator, DefaultSocialContributionCalculator>();
             services.AddTransient<IDeductibleCalculator, DefaultCharityDeductibleCalculator>();
+
+            services.AddTransient<ICacheService, InMemoryCacheService>();
+            services.AddMemoryCache();
 
             var app = builder.Build();
 

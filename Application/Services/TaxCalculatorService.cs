@@ -1,9 +1,8 @@
-﻿using Core;
+﻿using Core.Configuration;
 using Core.Dto;
 using Core.Exceptions;
 using Core.Services;
 using Core.TaxCalculators;
-using System.Reflection;
 
 namespace Application.Services
 {
@@ -11,14 +10,11 @@ namespace Application.Services
     {
         private readonly IEnumerable<ITaxCalculator> _taxCalculators;
         private readonly ICacheService _cacheService;
-        private readonly decimal _charitySpendPercentage;
 
         public TaxCalculatorService(
-            IConfigProvider configProvider,
             IEnumerable<ITaxCalculator> taxCalculators,
             ICacheService cacheService)
         {
-            _charitySpendPercentage = configProvider.GetValue<decimal>("CharitySpendPercentage");
             _taxCalculators = taxCalculators;
             _cacheService = cacheService;
         }
@@ -46,6 +42,7 @@ namespace Application.Services
                 taxDictionary[taxFieldName] = taxCalculator.Calculate(taxPayer);
             }
 
+            // TODO: Cache taxes before returning.
             return new Taxes(taxDictionary)
             {
                 GrossIncome = taxPayer.GrossIncome,

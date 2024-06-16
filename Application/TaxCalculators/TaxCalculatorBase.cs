@@ -1,4 +1,4 @@
-﻿using Core;
+﻿using Core.Configuration;
 using Core.Deductibles;
 using Core.Dto;
 using Core.TaxCalculators;
@@ -17,12 +17,14 @@ namespace Application.TaxCalculators
         protected readonly IDeductibleCalculator[] _deductibleCalculators;
 
         public TaxCalculatorBase(
-            IConfigProvider configProvider,
+            IConfigurationFactory configurationFactory,
             IDeductibleFactory deductibleFactory)
         {
+            var configProvider = configurationFactory.GetConfigProvider(UniqueName);
+
             _percentage = configProvider.GetValue<decimal>("Percentage");
             _taxFreeAmount = configProvider.GetValue<decimal>("TaxFreeAmount");
-            _maximumTaxableAmount = configProvider.GetValue<decimal>("MaximumTaxableAmount");
+            _maximumTaxableAmount = configProvider.GetValue<decimal?>("MaximumTaxableAmount");
 
             _deductibleCalculators = deductibleFactory.GetCalculators(UniqueName);
         }
@@ -38,17 +40,19 @@ namespace Application.TaxCalculators
             taxableIncome = Math.Min(taxableIncome, _maximumTaxableAmount ?? decimal.MaxValue);
             taxableIncome -= _taxFreeAmount;
 
+            taxableIncome = Math.Max(0, taxableIncome); // No negative taxes.
+
             return decimal.Round(taxableIncome * _percentage / 100, 2);
         }
 
         private decimal CalculateDeductions(TaxPayer taxPayer)
         {
-            var taxableIncome = taxPayer.GrossIncome;
+            decimal totalDeduction = 0;
             foreach (var calculator in _deductibleCalculators)
             {
-                taxableIncome -= calculator.Calculate(taxPayer);
+                totalDeduction += calculator.Calculate(taxPayer);
             }
-            return taxableIncome;
+            return totalDeduction;
         }
 
         public abstract bool IsApplicableTo(TaxPayer taxPayer);

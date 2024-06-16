@@ -1,4 +1,4 @@
-﻿using Core;
+﻿using Core.Configuration;
 using Core.Deductibles;
 using Core.Dto;
 using Core.TaxCalculators;
@@ -11,8 +11,8 @@ namespace Application.TaxCalculators
         public override string UniqueName => "Default:IncomeTax";
 
         public DefaultIncomeTaxCalculator
-            (IConfigProvider taxParameters, IDeductibleFactory deductibleFactory) :
-            base(taxParameters, deductibleFactory)
+            (IConfigurationFactory configurationFactory, IDeductibleFactory deductibleFactory) :
+            base(configurationFactory, deductibleFactory)
         {
         }
 
