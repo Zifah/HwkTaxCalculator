@@ -33,13 +33,7 @@ namespace Application.Services
             foreach (var taxCalculator in _taxCalculators.Where(tc => tc.IsApplicableTo(taxPayer)))
             {
                 var taxFieldName = taxCalculator.TaxFieldName;
-
-                if (taxDictionary.ContainsKey(taxFieldName))
-                {
-                    string message = $"More than one {taxFieldName} tax calculation exists  for taxpayer {taxPayer.SSN}.";
-                    throw new ConfigurationException(message);
-                }
-
+                ValidateTaxNotCalculated(taxPayer, taxDictionary, taxFieldName);
                 taxDictionary[taxFieldName] = taxCalculator.Calculate(taxPayer);
             }
 
@@ -52,6 +46,15 @@ namespace Application.Services
             _cacheService.CacheItem(cacheKey, taxes);
 
             return taxes;
+        }
+
+        private static void ValidateTaxNotCalculated(TaxPayer taxPayer, Dictionary<string, decimal> taxDictionary, string taxFieldName)
+        {
+            if (taxDictionary.ContainsKey(taxFieldName))
+            {
+                string message = $"More than one {taxFieldName} tax calculation exists  for taxpayer {taxPayer.SSN}.";
+                throw new ConfigurationException(message);
+            }
         }
     }
 }

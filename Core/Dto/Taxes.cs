@@ -21,6 +21,10 @@ namespace Core.Dto
                 {
                     property.SetValue(this, kvp.Value);
                 }
+                else
+                {
+                    throw new ArgumentException($"Unrecognized tax: '{kvp.Key}' could not be mapped.");
+                }
             }
 
             TotalTax = taxes.Values.Sum();
