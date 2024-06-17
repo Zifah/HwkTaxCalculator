@@ -1,18 +1,20 @@
-﻿using Core.Configuration;
+﻿using Application.TaxCalculators.Lithuania;
+using Core.Configuration;
 using Core.Deductibles;
 using Core.Dto;
 using Core.TaxCalculators;
 
 namespace Application.TaxCalculators.Default
 {
-    public class DefaultSocialContributionCalculator : DefaultTaxCalculatorBase, ITaxCalculator
+    public class LTSocialContributionCalculator : LTTaxCalculatorBase, ITaxCalculator
     {
         public override string TaxFieldName => nameof(Taxes.SocialTax);
-        public override string UniqueName => "Default:SocialContribution";
+        public override string UniqueName => "LT:SocialContribution";
 
-        public DefaultSocialContributionCalculator
+        public LTSocialContributionCalculator
             (IConfigurationFactory configurationFactory, IDeductibleFactory deductibleFactory) :
             base(configurationFactory, deductibleFactory)
-        { }
+        {
+        }
     }
 }

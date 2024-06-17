@@ -1,16 +1,17 @@
-﻿using Core.Configuration;
+﻿using Application.TaxCalculators.Lithuania;
+using Core.Configuration;
 using Core.Deductibles;
 using Core.Dto;
 using Core.TaxCalculators;
 
 namespace Application.TaxCalculators.Default
 {
-    public class DefaultIncomeTaxCalculator : DefaultTaxCalculatorBase, ITaxCalculator
+    public class LTIncomeTaxCalculator : LTTaxCalculatorBase, ITaxCalculator
     {
         public override string TaxFieldName => nameof(Taxes.IncomeTax);
-        public override string UniqueName => "Default:IncomeTax";
+        public override string UniqueName => "LT:IncomeTax";
 
-        public DefaultIncomeTaxCalculator
+        public LTIncomeTaxCalculator
             (IConfigurationFactory configurationFactory, IDeductibleFactory deductibleFactory) :
             base(configurationFactory, deductibleFactory)
         {

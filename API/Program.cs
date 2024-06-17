@@ -1,7 +1,9 @@
 using Application.Configuration;
 using Application.Deductibles;
+using Application.Deductibles.Default;
 using Application.Services;
 using Application.TaxCalculators.Default;
+using Application.TaxCalculators.Lithuania;
 using Core.Configuration;
 using Core.Deductibles;
 using Core.Services;
@@ -31,6 +33,10 @@ namespace API
             services.AddTransient<ITaxCalculator, DefaultIncomeTaxCalculator>();
             services.AddTransient<ITaxCalculator, DefaultSocialContributionCalculator>();
             services.AddTransient<IDeductibleCalculator, DefaultCharityDeductibleCalculator>();
+
+            services.AddTransient<ITaxCalculator, LTIncomeTaxCalculator>();
+            services.AddTransient<ITaxCalculator, LTSocialContributionCalculator>();
+            services.AddTransient<ITaxCalculator, LTPensionCalculator>();
 
             services.AddTransient<ICacheService, InMemoryCacheService>();
             services.AddMemoryCache();

@@ -12,7 +12,7 @@ namespace API.Controllers
     {
         private readonly ITaxCalculatorService _taxCalculatorService;
 
-        public CalculatorController(ITaxCalculatorService taxCalculatorService) 
+        public CalculatorController(ITaxCalculatorService taxCalculatorService)
         {
             _taxCalculatorService = taxCalculatorService;
 

@@ -1,5 +1,4 @@
-﻿using Core.Configuration;
-using Core.Dto;
+﻿using Core.Dto;
 using Core.Exceptions;
 using Core.Services;
 using Core.TaxCalculators;

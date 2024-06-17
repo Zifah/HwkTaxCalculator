@@ -3,7 +3,7 @@ using Core.Configuration.Parameters;
 using Core.Deductibles;
 using Core.Dto;
 
-namespace Application.Deductibles
+namespace Application.Deductibles.Default
 {
     public class DefaultCharityDeductibleCalculator : IDeductibleCalculator
     {

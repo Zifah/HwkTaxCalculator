@@ -12,7 +12,7 @@ namespace Application.TaxCalculators
 
         public abstract string UniqueName { get; }
 
-        protected readonly DefaultTaxParameters _taxParameters;
+        protected readonly BaseTaxParameters _taxParameters;
         protected readonly IDeductibleCalculator[] _deductibleCalculators;
 
         public TaxCalculatorBase(
@@ -20,7 +20,7 @@ namespace Application.TaxCalculators
             IDeductibleFactory deductibleFactory)
         {
             var configProvider = configurationFactory.GetConfigProvider(UniqueName);
-            _taxParameters = configProvider.Get<DefaultTaxParameters>()!;
+            _taxParameters = configProvider.Get<BaseTaxParameters>()!;
             _deductibleCalculators = deductibleFactory.GetCalculators(UniqueName);
         }
 
