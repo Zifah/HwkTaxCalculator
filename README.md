@@ -5,7 +5,7 @@
 
 ## Implemented tax jurisdictions
 1. **Default**: Taxes in this jurisdiction will apply to any taxpayer with a numeric SSN.
-2. **Lithuania**: Taxes in this jurisdiction will apply to any taxpayer with an SSN prefixed with "**LT**".
+2. **Lithuania**: Taxes in this jurisdiction will apply to any taxpayer with an SSN prefixed with "**LT**". In this jurisdiction, there is an extra tax: **pension**. Also, there is no tax-free amount, deductible or maximum taxable amount.
 
 The API will not calculate taxes for any taxpayer which does not fall into one of the above jurisdictions and will return HTTP 400 (BadRequest) with a helpful error message.
 
