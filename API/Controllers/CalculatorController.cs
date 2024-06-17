@@ -21,6 +21,11 @@ namespace API.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] TaxPayer taxPayerData)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var taxes = _taxCalculatorService.CalculateTaxes(taxPayerData);
             return Ok(taxes);
         }
