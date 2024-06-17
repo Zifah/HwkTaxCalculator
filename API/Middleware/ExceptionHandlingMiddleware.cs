@@ -1,4 +1,5 @@
 ﻿using Core.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Middleware
 {
@@ -30,14 +31,36 @@ namespace API.Middleware
 
         private void HandleException<T>(HttpContext context, T exception) where T : Exception
         {
-            string message = "An unexpected error occurred.";
-            int statusCode = StatusCodes.Status500InternalServerError;
+            string message;
+            int statusCode;
+
+            switch (exception)
+            {
+                case BadRequestException badRequestException:
+                    message = badRequestException.Message;
+                    statusCode = StatusCodes.Status400BadRequest;
+                    break;
+
+                default:
+                    message = "An unexpected error occurred.";
+                    statusCode = StatusCodes.Status500InternalServerError;
+                    break;
+            }
 
             _logger.LogError(exception, message);
 
+            var problemDetails = new ProblemDetails
+            {
+                Status = statusCode,
+                Title = "An error occurred while processing your request.",
+                Detail = message,
+                Instance = context.Request.Path
+            };
+
             context.Response.StatusCode = statusCode;
+            context.Response.ContentType = "application/json";
             context.Response
-                .WriteAsJsonAsync(message)
+                .WriteAsJsonAsync(problemDetails)
                 .GetAwaiter()
                 .GetResult();
         }

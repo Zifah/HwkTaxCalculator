@@ -1,4 +1,5 @@
-﻿using Core.Dto;
+﻿using Core.Configuration;
+using Core.Dto;
 using Core.Exceptions;
 using Core.Services;
 using Core.TaxCalculators;
@@ -34,6 +35,11 @@ namespace Application.Services
                 var taxFieldName = taxCalculator.TaxFieldName;
                 ValidateTaxNotCalculated(taxPayer, taxDictionary, taxFieldName);
                 taxDictionary[taxFieldName] = taxCalculator.Calculate(taxPayer);
+            }
+
+            if (!taxDictionary.Any())
+            {
+                throw new BadRequestException("Unable to calculate taxes for this taxpayer's jurisdiction.");
             }
 
             taxes = new Taxes(taxDictionary)

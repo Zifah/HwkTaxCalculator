@@ -1,3 +1,4 @@
+using API.Middleware;
 using Application.Configuration;
 using Application.Deductibles;
 using Application.Deductibles.Default;
@@ -41,8 +42,11 @@ namespace API
             services.AddTransient<ICacheService, InMemoryCacheService>();
             services.AddMemoryCache();
 
+            services.AddScoped<ExceptionHandlingMiddleware>();
+
             var app = builder.Build();
 
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
