@@ -1,7 +1,7 @@
 using Application.Configuration;
 using Application.Deductibles;
 using Application.Services;
-using Application.TaxCalculators;
+using Application.TaxCalculators.Default;
 using Core.Configuration;
 using Core.Deductibles;
 using Core.Services;

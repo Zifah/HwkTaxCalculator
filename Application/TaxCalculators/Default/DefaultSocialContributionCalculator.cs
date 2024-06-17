@@ -3,18 +3,17 @@ using Core.Deductibles;
 using Core.Dto;
 using Core.TaxCalculators;
 
-namespace Application.TaxCalculators
+namespace Application.TaxCalculators.Default
 {
-    public class DefaultIncomeTaxCalculator : TaxCalculatorBase, ITaxCalculator
+    public class DefaultSocialContributionCalculator : TaxCalculatorBase, ITaxCalculator
     {
-        public override string TaxFieldName => nameof(Taxes.IncomeTax);
-        public override string UniqueName => "Default:IncomeTax";
+        public override string TaxFieldName => nameof(Taxes.SocialTax);
+        public override string UniqueName => "Default:SocialContribution";
 
-        public DefaultIncomeTaxCalculator
+        public DefaultSocialContributionCalculator
             (IConfigurationFactory configurationFactory, IDeductibleFactory deductibleFactory) :
             base(configurationFactory, deductibleFactory)
-        {
-        }
+        { }
 
         public override bool IsApplicableTo(TaxPayer taxPayer)
         {

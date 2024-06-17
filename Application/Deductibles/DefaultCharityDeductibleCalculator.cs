@@ -1,4 +1,5 @@
 ﻿using Core.Configuration;
+using Core.Configuration.Parameters;
 using Core.Deductibles;
 using Core.Dto;
 
@@ -14,8 +15,9 @@ namespace Application.Deductibles
         {
             var configProvider = configurationFactory.GetConfigProvider(UniqueName);
 
-            ApplicableTaxes = configProvider.GetValue<string[]>("ApplicableTaxes")!;
-            _maxPercentage = configProvider.GetValue<decimal>("MaxPercentage");
+            var configuration = configProvider.Get<DefaultCharityDeductibleParameters>();
+            ApplicableTaxes = configuration.ApplicableTaxes;
+            _maxPercentage = configuration.MaxPercentage;
         }
 
         public decimal Calculate(TaxPayer taxPayer)

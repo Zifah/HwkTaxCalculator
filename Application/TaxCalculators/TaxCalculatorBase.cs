@@ -1,4 +1,5 @@
 ﻿using Core.Configuration;
+using Core.Configuration.Parameters;
 using Core.Deductibles;
 using Core.Dto;
 using Core.TaxCalculators;
@@ -11,9 +12,7 @@ namespace Application.TaxCalculators
 
         public abstract string UniqueName { get; }
 
-        protected readonly decimal _percentage;
-        protected readonly decimal _taxFreeAmount;
-        protected readonly decimal? _maximumTaxableAmount;
+        protected readonly DefaultTaxParameters _taxParameters;
         protected readonly IDeductibleCalculator[] _deductibleCalculators;
 
         public TaxCalculatorBase(
@@ -21,11 +20,7 @@ namespace Application.TaxCalculators
             IDeductibleFactory deductibleFactory)
         {
             var configProvider = configurationFactory.GetConfigProvider(UniqueName);
-
-            _percentage = configProvider.GetValue<decimal>("Percentage");
-            _taxFreeAmount = configProvider.GetValue<decimal>("TaxFreeAmount");
-            _maximumTaxableAmount = configProvider.GetValue<decimal?>("MaximumTaxableAmount");
-
+            _taxParameters = configProvider.Get<DefaultTaxParameters>()!;
             _deductibleCalculators = deductibleFactory.GetCalculators(UniqueName);
         }
 
@@ -37,12 +32,12 @@ namespace Application.TaxCalculators
             }
 
             var taxableIncome = taxPayer.GrossIncome - CalculateDeductions(taxPayer);
-            taxableIncome = Math.Min(taxableIncome, _maximumTaxableAmount ?? decimal.MaxValue);
-            taxableIncome -= _taxFreeAmount;
+            taxableIncome = Math.Min(taxableIncome, _taxParameters.MaximumTaxableAmount ?? decimal.MaxValue);
+            taxableIncome -= _taxParameters.TaxFreeAmount;
 
             taxableIncome = Math.Max(0, taxableIncome); // No negative taxes.
 
-            return decimal.Round(taxableIncome * _percentage / 100, 2);
+            return decimal.Round(taxableIncome * _taxParameters.Percentage / 100, 2);
         }
 
         private decimal CalculateDeductions(TaxPayer taxPayer)

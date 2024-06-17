@@ -23,7 +23,7 @@ namespace Application.Configuration
 
         public T? GetValue<T>(string key)
         {
-            string fullKey = string.IsNullOrWhiteSpace(_sectionName) ? key : $"{_sectionName}:{key}";
+            string fullKey = $"{_sectionName}:{key}".Trim(':');
             var isNullableType = Nullable.GetUnderlyingType(typeof(T)) != null;
 
             if (typeof(T).IsPrimitive || typeof(T) == typeof(string) || typeof(T) == typeof(decimal))
@@ -52,6 +52,16 @@ namespace Application.Configuration
 
             return configObject;
 
+        }
+
+        public T Get<T>() 
+        {
+            if (string.IsNullOrWhiteSpace(_sectionName))
+            {
+                throw new ConfigurationException("Configuration sectionName must be set to get the entire section.");
+            }
+
+            return GetValue<T>(string.Empty)!;
         }
     }
 }
