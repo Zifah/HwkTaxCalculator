@@ -13,7 +13,8 @@ namespace Application.UnitTests.TaxCalculators.Default
         private Mock<IConfigurationFactory> _mockConfigurationFactory;
         private Mock<IDeductibleFactory> _mockDeductibleFactory;
         private Mock<IConfigProvider> _mockConfigProvider;
-        private Mock<IDeductibleCalculator> _mockDeductibleCalculator;
+        private Mock<IDeductibleCalculator> _mockDeductibleCalculatorB;
+        private Mock<IDeductibleCalculator> _mockDeductibleCalculatorA;
         private BaseTaxParameters _baseTaxParameters;
         private DefaultIncomeTaxCalculator _calculator;
 
@@ -22,8 +23,9 @@ namespace Application.UnitTests.TaxCalculators.Default
         {
             _mockConfigurationFactory = new Mock<IConfigurationFactory>();
             _mockDeductibleFactory = new Mock<IDeductibleFactory>();
+            _mockDeductibleCalculatorA = new Mock<IDeductibleCalculator>();
+            _mockDeductibleCalculatorB = new Mock<IDeductibleCalculator>();
             _mockConfigProvider = new Mock<IConfigProvider>();
-            _mockDeductibleCalculator = new Mock<IDeductibleCalculator>();
 
             _baseTaxParameters = new BaseTaxParameters
             {
@@ -39,7 +41,7 @@ namespace Application.UnitTests.TaxCalculators.Default
                 .Returns(_mockConfigProvider.Object);
 
             _mockDeductibleFactory.Setup(df => df.GetCalculators("Default:IncomeTax"))
-                .Returns(new[] { _mockDeductibleCalculator.Object });
+                .Returns(new[] { _mockDeductibleCalculatorA.Object, _mockDeductibleCalculatorB.Object });
 
             _calculator = new DefaultIncomeTaxCalculator(
                 _mockConfigurationFactory.Object,
@@ -80,7 +82,24 @@ namespace Application.UnitTests.TaxCalculators.Default
             decimal expectedTax)
         {
             var taxPayer = new TaxPayer { FullName = fullName, SSN = ssn, GrossIncome = grossIncome };
-            _mockDeductibleCalculator.Setup(dc => dc.Calculate(taxPayer)).Returns(deductible);
+            _mockDeductibleCalculatorA.Setup(dc => dc.Calculate(taxPayer)).Returns(deductible);
+
+            var result = _calculator.Calculate(taxPayer);
+
+            Assert.That(result, Is.EqualTo(expectedTax));
+        }
+
+        public void Calculate_ShouldAddUpMultipleDeductibles()
+        {
+            decimal deductibleA = 50, deductibleB = 100, expectedTax = 135;
+            var taxPayer = new TaxPayer { FullName = "Mick", SSN = "321987654", GrossIncome = 2500 };
+
+            _mockDeductibleCalculatorA.Setup(dc => dc.Calculate(taxPayer)).Returns(deductibleA);
+            _mockDeductibleCalculatorA.Setup(dc => dc.Calculate(taxPayer)).Returns(deductibleB);
+
+
+            _mockDeductibleFactory.Setup(df => df.GetCalculators("Default:IncomeTax"))
+                .Returns(new[] { _mockDeductibleCalculatorA.Object });
 
             var result = _calculator.Calculate(taxPayer);
 
