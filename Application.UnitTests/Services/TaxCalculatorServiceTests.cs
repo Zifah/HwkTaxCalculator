@@ -124,7 +124,10 @@ namespace Application.UnitTests.Services
             _taxCalculatorsMock.Setup(tc => tc.GetEnumerator()).Returns(taxCalculators.GetEnumerator());
 
             // Act & Assert
-            Assert.Throws<BadRequestException>(() => _taxCalculatorService.CalculateTaxes(taxPayer));
+            var ex = Assert.Throws<BadRequestException>(() => _taxCalculatorService.CalculateTaxes(taxPayer));
+
+            // Assert exception message
+            Assert.That(ex.Message, Is.EqualTo($"Unable to calculate taxes for this taxpayer's jurisdiction."));
         }
     }
 }
