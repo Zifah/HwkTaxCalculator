@@ -28,34 +28,37 @@ namespace Application.UnitTests.Services
 
         [TestCase(true, 500, 500)]
         [TestCase(false, 500, 0)]
-        public void CalculateTaxes_ReturnsValidTaxes_FromApplicableTaxCalculators(bool isPensionApplicable, decimal pension, decimal expectedPension)
+        public void CalculateTaxes_ReturnsValidTaxes_BasedOnlyOnApplicableTaxCalculators(
+            bool isPensionApplicable, decimal calculatedPension, decimal expectedPension)
         {
             // Arrange
             var taxPayer = new TaxPayer { SSN = "123456789", GrossIncome = 50000, CharitySpent = 1000 };
-            decimal incomeTax = 5000, socialTax = 1000;
+            decimal calculatedIncomeTax = 5000, calculatedSocialTax = 1000;
+            decimal expectedTotalTax = calculatedIncomeTax + calculatedSocialTax + expectedPension;
+            decimal expectedNetIncome = taxPayer.GrossIncome - expectedTotalTax;
 
 
             // Mock behavior for tax calculators
             var taxCalculatorMock1 = new Mock<ITaxCalculator>();
             taxCalculatorMock1.Setup(tc => tc.TaxFieldName).Returns("IncomeTax");
             taxCalculatorMock1.Setup(tc => tc.IsApplicableTo(taxPayer)).Returns(true);
-            taxCalculatorMock1.Setup(tc => tc.Calculate(taxPayer)).Returns(incomeTax);
+            taxCalculatorMock1.Setup(tc => tc.Calculate(taxPayer)).Returns(calculatedIncomeTax);
 
             var taxCalculatorMock2 = new Mock<ITaxCalculator>();
             taxCalculatorMock2.Setup(tc => tc.TaxFieldName).Returns("SocialTax");
             taxCalculatorMock2.Setup(tc => tc.IsApplicableTo(taxPayer)).Returns(true);
-            taxCalculatorMock2.Setup(tc => tc.Calculate(taxPayer)).Returns(socialTax);
+            taxCalculatorMock2.Setup(tc => tc.Calculate(taxPayer)).Returns(calculatedSocialTax);
 
             var taxCalculatorMock3 = new Mock<ITaxCalculator>();
             taxCalculatorMock3.Setup(tc => tc.TaxFieldName).Returns("Pension");
             taxCalculatorMock3.Setup(tc => tc.IsApplicableTo(taxPayer)).Returns(isPensionApplicable);
-            taxCalculatorMock3.Setup(tc => tc.Calculate(taxPayer)).Returns(pension);
+            taxCalculatorMock3.Setup(tc => tc.Calculate(taxPayer)).Returns(calculatedPension);
 
             // Multiple calculators for same tax, but only one (Mock2) applies for this taxpayer, so no problem.
             var taxCalculatorMock4 = new Mock<ITaxCalculator>();
             taxCalculatorMock4.Setup(tc => tc.TaxFieldName).Returns("SocialTax");
             taxCalculatorMock4.Setup(tc => tc.IsApplicableTo(taxPayer)).Returns(false);
-            taxCalculatorMock4.Setup(tc => tc.Calculate(taxPayer)).Returns(socialTax);
+            taxCalculatorMock4.Setup(tc => tc.Calculate(taxPayer)).Returns(calculatedSocialTax);
 
             var taxCalculators = new List<ITaxCalculator> {
                 taxCalculatorMock1.Object,
@@ -74,10 +77,11 @@ namespace Application.UnitTests.Services
             Assert.That(result.CharitySpent, Is.EqualTo(taxPayer.CharitySpent));
 
             Assert.That(result.Pension, Is.EqualTo(expectedPension));
-            Assert.That(result.IncomeTax, Is.EqualTo(incomeTax));
-            Assert.That(result.SocialTax, Is.EqualTo(socialTax));
+            Assert.That(result.IncomeTax, Is.EqualTo(calculatedIncomeTax));
+            Assert.That(result.SocialTax, Is.EqualTo(calculatedSocialTax));
 
-            Assert.That(result.TotalTax, Is.EqualTo(incomeTax + socialTax + expectedPension));
+            Assert.That(result.TotalTax, Is.EqualTo(expectedTotalTax));
+            Assert.That(result.NetIncome, Is.EqualTo(expectedNetIncome));
         }
 
         [Test]
