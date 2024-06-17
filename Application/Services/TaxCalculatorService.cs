@@ -1,5 +1,4 @@
-﻿using Core.Configuration;
-using Core.Dto;
+﻿using Core.Dto;
 using Core.Exceptions;
 using Core.Services;
 using Core.TaxCalculators;
@@ -57,7 +56,7 @@ namespace Application.Services
         {
             if (taxDictionary.ContainsKey(taxFieldName))
             {
-                string message = $"More than one {taxFieldName} tax calculation exists  for taxpayer {taxPayer.SSN}.";
+                string message = $"More than one {taxFieldName} calculation exists for taxpayer {taxPayer.SSN}.";
                 throw new ConfigurationException(message);
             }
         }
